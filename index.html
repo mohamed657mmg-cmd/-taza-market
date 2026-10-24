@@ -58,9 +58,10 @@
       background: #f0f7ef;
       color: #16813a;
       border-radius: 50%;
-      width: 40px;
+      min-width: 48px;
       height: 40px;
-      font-size: 19px;
+      font-size: 17px;
+      cursor: pointer;
     }
 
     .location {
@@ -117,6 +118,7 @@
       color: #075526;
       padding: 9px 15px;
       font-weight: bold;
+      cursor: pointer;
     }
 
     .banner-fruit {
@@ -143,6 +145,7 @@
       background: transparent;
       color: #16813a;
       font-size: 12px;
+      cursor: pointer;
     }
 
     .categories {
@@ -160,6 +163,7 @@
       padding: 12px 3px;
       font-size: 11px;
       color: #36483a;
+      cursor: pointer;
     }
 
     .category .emoji {
@@ -218,6 +222,7 @@
       padding: 10px;
       border-radius: 9px;
       font-weight: bold;
+      cursor: pointer;
     }
 
     .bottom-nav {
@@ -232,6 +237,7 @@
       align-items: center;
       background: white;
       border-top: 1px solid #e8eee7;
+      z-index: 10;
     }
 
     .nav-item {
@@ -243,6 +249,7 @@
       flex-direction: column;
       align-items: center;
       gap: 5px;
+      cursor: pointer;
     }
 
     .nav-item span {
@@ -254,7 +261,6 @@
       font-weight: bold;
     }
 
-    /* نافذة السلة */
     .cart-panel {
       display: none;
       position: fixed;
@@ -300,6 +306,7 @@
       width: 27px;
       height: 27px;
       border-radius: 7px;
+      cursor: pointer;
     }
 
     .cart-total {
@@ -314,16 +321,26 @@
       background: #f1f3f1;
       padding: 10px 14px;
       border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .empty-message {
+      padding: 15px;
+      color: #718075;
+      font-size: 13px;
+      text-align: center;
     }
 
     @media (min-width: 600px) {
       body {
         padding-top: 20px;
       }
+
       .app {
         border-radius: 18px;
         overflow: hidden;
       }
+
       .bottom-nav {
         bottom: 20px;
       }
@@ -336,22 +353,27 @@
 
   <header>
     <div class="logo"><span>🌿</span>طازة</div>
-    <button class="header-btn" onclick="openCart()" aria-label="السلة">🛒 <b id="cartCount">0</b></button>
+    <button class="header-btn" onclick="openCart()" aria-label="السلة">
+      🛒 <b id="cartCount">0</b>
+    </button>
   </header>
 
   <div class="location">📍 التوصيل إلى: حدّد عنوانك</div>
 
   <div class="search">
     🔍
-    <input id="searchInput" type="search" placeholder="بتدور على إيه؟" oninput="showProducts()">
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="بتدور على إيه؟"
+      oninput="showProducts()"
+    >
   </div>
 
   <section class="banner">
     <h1>طازة كل يوم 🌱<br>من المزرعة لحد باب بيتك</h1>
     <p>خضار وفاكهة مختارة بعناية</p>
-    <button onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})">
-      تسوّق الآن ←
-    </button>
+    <button onclick="scrollToProducts()">تسوّق الآن ←</button>
     <div class="banner-fruit">🍊 🍓</div>
   </section>
 
@@ -364,13 +386,16 @@
     <button class="category" onclick="filterProducts('فاكهة')">
       <span class="emoji">🍎</span>الفاكهة
     </button>
+
     <button class="category" onclick="filterProducts('خضار')">
       <span class="emoji">🥦</span>الخضار
     </button>
+
     <button class="category" onclick="filterProducts('عروض')">
       <span class="emoji">🏷️</span>العروض
     </button>
-    <button class="category" onclick="alert('هنضيف صفحة المفضلة في الخطوة الجاية')">
+
+    <button class="category" onclick="showFavorites()">
       <span class="emoji">❤️</span>المفضلة
     </button>
   </div>
@@ -385,26 +410,47 @@
 </div>
 
 <nav class="bottom-nav">
-  <button class="nav-item active" onclick="goHome()"><span>⌂</span>الرئيسية</button>
-  <button class="nav-item" onclick="alert('هنعمل صفحة الأقسام بعد ما نخلص الرئيسية')"><span>▦</span>الأقسام</button>
-  <button class="nav-item" onclick="openCart()"><span>🛒</span>السلة</button>
-  <button class="nav-item" onclick="alert('هنضيف المفضلة في خطوة منفصلة')"><span>♡</span>المفضلة</button>
-  <button class="nav-item" onclick="alert('هنعمل صفحة الحساب بعدين')"><span>♙</span>حسابي</button>
+  <button class="nav-item active" onclick="goHome(this)">
+    <span>⌂</span>الرئيسية
+  </button>
+
+  <button class="nav-item" onclick="showCategories(this)">
+    <span>▦</span>الأقسام
+  </button>
+
+  <button class="nav-item" onclick="openCart()">
+    <span>🛒</span>السلة
+  </button>
+
+  <button class="nav-item" onclick="showFavorites(this)">
+    <span>♡</span>المفضلة
+  </button>
+
+  <button class="nav-item" onclick="showAccount(this)">
+    <span>♙</span>حسابي
+  </button>
 </nav>
 
 <div class="cart-panel" id="cartPanel" onclick="if(event.target===this)closeCart()">
   <div class="cart-box">
     <h2>🛒 سلة طازة</h2>
     <div id="cartItems"></div>
-    <div class="cart-total"><span>الإجمالي</span><span id="cartTotal">0 جنيه</span></div>
-    <button class="add-btn" onclick="alert('هنبني صفحة إتمام الطلب في الخطوة القادمة')">إتمام الطلب</button>
+
+    <div class="cart-total">
+      <span>الإجمالي</span>
+      <span id="cartTotal">0 جنيه</span>
+    </div>
+
+    <button class="add-btn" onclick="checkout()">
+      إتمام الطلب
+    </button>
+
     <br><br>
     <button class="close-cart" onclick="closeCart()">إغلاق</button>
   </div>
 </div>
 
 <script>
-  // منتجات تجريبية؛ نقدر نغيّرها أو نزودها بعدين
   const products = [
     {id:1,name:"مانجو",emoji:"🥭",price:55,unit:"كيلو",category:"فاكهة"},
     {id:2,name:"فراولة",emoji:"🍓",price:40,unit:"علبة",category:"فاكهة"},
@@ -422,11 +468,13 @@
 
   let cart = {};
   let currentFilter = "الكل";
+  let favorites = [];
 
   function showProducts() {
     const query = document.getElementById("searchInput").value.trim();
+
     const filtered = products.filter(p =>
-      (currentFilter === "الكل" || currentFilter === "عروض" || p.category === currentFilter) &&
+      (currentFilter === "الكل" || p.category === currentFilter) &&
       p.name.includes(query)
     );
 
@@ -436,17 +484,23 @@
         <h3>${p.name}</h3>
         <small>طازة • ${p.unit}</small>
         <div class="price">${p.price} جنيه</div>
-        <button class="add-btn" onclick="addToCart(${p.id})">＋ أضف للسلة</button>
+        <button class="add-btn" onclick="addToCart(${p.id})">
+          ＋ أضف للسلة
+        </button>
+        <button class="close-cart" style="width:100%;margin-top:7px" onclick="toggleFavorite(${p.id})">
+          ${favorites.includes(p.id) ? "❤️ في المفضلة" : "♡ أضف للمفضلة"}
+        </button>
       </article>
-    `).join("") || "<p>مفيش منتجات مطابقة للبحث.</p>";
+    `).join("") || '<p class="empty-message">مفيش منتجات مطابقة للبحث.</p>';
   }
 
   function filterProducts(category) {
-    currentFilter = category;
+    currentFilter = category === "عروض" ? "عروض" : category;
     document.getElementById("productsTitle").textContent =
       category === "الكل" ? "منتجات طازة" : category;
+
     showProducts();
-    document.getElementById("productsSection").scrollIntoView({behavior:"smooth"});
+    scrollToProducts();
   }
 
   function addToCart(id) {
@@ -459,6 +513,7 @@
     document.getElementById("cartCount").textContent = count;
 
     const rows = Object.entries(cart);
+
     document.getElementById("cartItems").innerHTML = rows.length
       ? rows.map(([id, qty]) => {
           const p = products.find(item => item.id === Number(id));
@@ -472,7 +527,7 @@
               </div>
             </div>`;
         }).join("")
-      : "<p>السلة لسه فاضية، اختار منتجات الأول.</p>";
+      : '<p class="empty-message">السلة لسه فاضية، اختار منتجات الأول.</p>';
 
     const total = rows.reduce((sum, [id, qty]) => {
       return sum + products.find(p => p.id === Number(id)).price * qty;
@@ -496,8 +551,82 @@
     document.getElementById("cartPanel").style.display = "none";
   }
 
-  function goHome() {
-    window.scrollTo({top:0,behavior:"smooth"});
+  function scrollToProducts() {
+    document.getElementById("productsSection").scrollIntoView({
+      behavior: "smooth"
+    });
+  }
+
+  function goHome(button) {
+    setActiveNav(button);
+    currentFilter = "الكل";
+    document.getElementById("productsTitle").textContent = "منتجات طازة";
+    showProducts();
+    window.scrollTo({top: 0, behavior: "smooth"});
+  }
+
+  function showCategories(button) {
+    setActiveNav(button);
+    document.querySelector(".categories").scrollIntoView({behavior:"smooth"});
+  }
+
+  function toggleFavorite(id) {
+    if (favorites.includes(id)) {
+      favorites = favorites.filter(item => item !== id);
+    } else {
+      favorites.push(id);
+    }
+    showProducts();
+  }
+
+  function showFavorites(button) {
+    if (button) setActiveNav(button);
+
+    currentFilter = "المفضلة";
+    document.getElementById("productsTitle").textContent = "المفضلة";
+
+    const favoriteProducts = products.filter(p =>
+      favorites.includes(p.id)
+    );
+
+    document.getElementById("productsGrid").innerHTML =
+      favoriteProducts.map(p => `
+        <article class="product">
+          <div class="product-img">${p.emoji}</div>
+          <h3>${p.name}</h3>
+          <small>طازة • ${p.unit}</small>
+          <div class="price">${p.price} جنيه</div>
+          <button class="add-btn" onclick="addToCart(${p.id})">
+            ＋ أضف للسلة
+          </button>
+          <button class="close-cart" style="width:100%;margin-top:7px" onclick="toggleFavorite(${p.id})">
+            إزالة من المفضلة
+          </button>
+        </article>
+      `).join("") || '<p class="empty-message">لسه مفيش منتجات في المفضلة.</p>';
+
+    scrollToProducts();
+  }
+
+  function showAccount(button) {
+    setActiveNav(button);
+    alert("هنضيف صفحة الحساب والعنوان وبيانات العميل بعدين.");
+  }
+
+  function setActiveNav(button) {
+    document.querySelectorAll(".nav-item").forEach(item =>
+      item.classList.remove("active")
+    );
+    if (button) button.classList.add("active");
+  }
+
+  function checkout() {
+    if (Object.keys(cart).length === 0) {
+      alert("السلة فاضية! ضيف منتجات الأول.");
+      return;
+    }
+
+    alert("السلة جاهزة، ولسه هنربط إتمام الطلب ببيانات العميل وقاعدة البيانات في مرحلة لاحقة.");
   }
 
   showProducts();
@@ -505,4 +634,4 @@
 </script>
 </body>
   </html>
-    
+  
