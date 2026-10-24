@@ -331,6 +331,66 @@
       text-align: center;
     }
 
+    /* شاشة الترحيب */
+    .welcome-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 25px;
+      background: linear-gradient(160deg, #f4faef, #ffffff 55%, #e2f3df);
+    }
+
+    .welcome-logo {
+      color: #167b38;
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .welcome-basket {
+      width: 210px;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 78px;
+      margin: 10px 0 20px;
+      border-radius: 35px;
+      background: #eaf5e5;
+    }
+
+    .welcome-screen h1 {
+      color: #145c2c;
+      font-size: 27px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .welcome-screen p {
+      color: #6c7c6d;
+      font-size: 15px;
+      line-height: 1.8;
+      margin-bottom: 25px;
+    }
+
+    .welcome-button {
+      border: 0;
+      border-radius: 14px;
+      background: #16813a;
+      color: white;
+      padding: 15px 30px;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 18px #16813a30;
+    }
+
     @media (min-width: 600px) {
       body {
         padding-top: 20px;
@@ -349,6 +409,26 @@
 </head>
 
 <body>
+
+<!-- شاشة الترحيب تظهر أول ما التطبيق يفتح -->
+<div class="welcome-screen" id="welcomeScreen">
+  <div class="welcome-logo">🌿 طازة</div>
+
+  <div class="welcome-basket">🧺🥬🍅🍊</div>
+
+  <h1>طازة كل يوم…<br>خير الطبيعة لحد باب بيتك</h1>
+
+  <p>
+    خضار وفاكهة طازة، مختارة بعناية<br>
+    اطلب اللي بتحبه، وإحنا نوصلّه لحد عندك
+  </p>
+
+  <button class="welcome-button" onclick="startShopping()">
+    ابدأ التسوق الآن ←
+  </button>
+</div>
+
+<!-- الصفحة الرئيسية -->
 <div class="app">
 
   <header>
@@ -409,6 +489,7 @@
 
 </div>
 
+<!-- شريط التنقل -->
 <nav class="bottom-nav">
   <button class="nav-item active" onclick="goHome(this)">
     <span>⌂</span>الرئيسية
@@ -431,6 +512,7 @@
   </button>
 </nav>
 
+<!-- نافذة السلة -->
 <div class="cart-panel" id="cartPanel" onclick="if(event.target===this)closeCart()">
   <div class="cart-box">
     <h2>🛒 سلة طازة</h2>
@@ -464,10 +546,14 @@
     {id:12,name:"خس",emoji:"🥬",price:12,unit:"واحدة",category:"خضار"}
   ];
 
-  // تحميل السلة والمفضلة المحفوظتين على الجهاز
+  // استرجاع السلة والمفضلة من نفس المتصفح
   let cart = JSON.parse(localStorage.getItem("tazaCart")) || {};
   let favorites = JSON.parse(localStorage.getItem("tazaFavorites")) || [];
   let currentFilter = "الكل";
+
+  function startShopping() {
+    document.getElementById("welcomeScreen").style.display = "none";
+  }
 
   function showProducts() {
     const query = document.getElementById("searchInput").value.trim();
@@ -513,7 +599,6 @@
   }
 
   function updateCart() {
-    // حفظ السلة على الجهاز
     localStorage.setItem("tazaCart", JSON.stringify(cart));
 
     const count = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
@@ -591,7 +676,6 @@
       favorites.push(id);
     }
 
-    // حفظ المفضلة على الجهاز
     localStorage.setItem("tazaFavorites", JSON.stringify(favorites));
 
     if (currentFilter === "المفضلة") {
@@ -655,6 +739,7 @@
   showProducts();
   updateCart();
 </script>
+
 </body>
-    </html>
+  </html>
     
