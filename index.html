@@ -441,9 +441,7 @@
       <span id="cartTotal">0 جنيه</span>
     </div>
 
-    <button class="add-btn" onclick="checkout()">
-      إتمام الطلب
-    </button>
+    <button class="add-btn" onclick="checkout()">إتمام الطلب</button>
 
     <br><br>
     <button class="close-cart" onclick="closeCart()">إغلاق</button>
@@ -466,9 +464,10 @@
     {id:12,name:"خس",emoji:"🥬",price:12,unit:"واحدة",category:"خضار"}
   ];
 
-  let cart = {};
+  // تحميل السلة والمفضلة المحفوظتين على الجهاز
+  let cart = JSON.parse(localStorage.getItem("tazaCart")) || {};
+  let favorites = JSON.parse(localStorage.getItem("tazaFavorites")) || [];
   let currentFilter = "الكل";
-  let favorites = [];
 
   function showProducts() {
     const query = document.getElementById("searchInput").value.trim();
@@ -495,7 +494,12 @@
   }
 
   function filterProducts(category) {
-    currentFilter = category === "عروض" ? "عروض" : category;
+    if (category === "عروض") {
+      alert("هنضيف المنتجات المخفضة والعروض بعدين.");
+      return;
+    }
+
+    currentFilter = category;
     document.getElementById("productsTitle").textContent =
       category === "الكل" ? "منتجات طازة" : category;
 
@@ -509,6 +513,9 @@
   }
 
   function updateCart() {
+    // حفظ السلة على الجهاز
+    localStorage.setItem("tazaCart", JSON.stringify(cart));
+
     const count = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
     document.getElementById("cartCount").textContent = count;
 
@@ -517,6 +524,7 @@
     document.getElementById("cartItems").innerHTML = rows.length
       ? rows.map(([id, qty]) => {
           const p = products.find(item => item.id === Number(id));
+
           return `
             <div class="cart-row">
               <span>${p.emoji} ${p.name}<br>${p.price} جنيه</span>
@@ -538,7 +546,11 @@
 
   function changeQty(id, change) {
     cart[id] = (cart[id] || 0) + change;
-    if (cart[id] <= 0) delete cart[id];
+
+    if (cart[id] <= 0) {
+      delete cart[id];
+    }
+
     updateCart();
   }
 
@@ -567,7 +579,9 @@
 
   function showCategories(button) {
     setActiveNav(button);
-    document.querySelector(".categories").scrollIntoView({behavior:"smooth"});
+    document.querySelector(".categories").scrollIntoView({
+      behavior: "smooth"
+    });
   }
 
   function toggleFavorite(id) {
@@ -576,7 +590,15 @@
     } else {
       favorites.push(id);
     }
-    showProducts();
+
+    // حفظ المفضلة على الجهاز
+    localStorage.setItem("tazaFavorites", JSON.stringify(favorites));
+
+    if (currentFilter === "المفضلة") {
+      showFavorites();
+    } else {
+      showProducts();
+    }
   }
 
   function showFavorites(button) {
@@ -617,6 +639,7 @@
     document.querySelectorAll(".nav-item").forEach(item =>
       item.classList.remove("active")
     );
+
     if (button) button.classList.add("active");
   }
 
@@ -626,12 +649,12 @@
       return;
     }
 
-    alert("السلة جاهزة، ولسه هنربط إتمام الطلب ببيانات العميل وقاعدة البيانات في مرحلة لاحقة.");
+    alert("السلة جاهزة، ولسه هنربط إتمام الطلب ببيانات العميل وقاعدة البيانات بعدين.");
   }
 
   showProducts();
   updateCart();
 </script>
 </body>
-  </html>
-  
+    </html>
+    
